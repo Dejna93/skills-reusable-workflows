@@ -1,0 +1,70 @@
+name: Job Container with Services
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-in-container:
+    runs-on: ubuntu-latest
+
+    # TODO: Set container to node:20
+    # container: ???
+
+    # TODO: Add services (NO port mapping — containers share the Docker network)
+    #
+    # services:
+    #   db:
+    #     image: ???
+    #     env:
+    #       POSTGRES_USER: app
+    #       POSTGRES_PASSWORD: secret
+    #       POSTGRES_DB: myapp_test
+    #     # Do NOT add ports: — not needed in container mode!
+    #     options: >-
+    #       --health-cmd="???"
+    #       --health-interval=10s
+    #       --health-timeout=5s
+    #       --health-retries=5
+    #
+    #   cache:
+    #     image: ???
+    #     options: >-
+    #       --health-cmd="???"
+    #       --health-interval=10s
+    #       --health-timeout=5s
+    #       --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Install postgresql-client inside the container
+      # (the Node image has no psql by default)
+      # - name: Install psql
+      #   run: apt-get update && apt-get install -y postgresql-client
+
+      # TODO: Initialize the database schema
+      # Note: the host is 'db' (service name), NOT 'localhost'!
+      # Create src/schema.sql with the following content:
+      #   CREATE TABLE IF NOT EXISTS users (
+      #     id SERIAL PRIMARY KEY,
+      #     name VARCHAR(100) NOT NULL,
+      #     email VARCHAR(255) UNIQUE NOT NULL,
+      #     created_at TIMESTAMP DEFAULT NOW()
+      #   );
+      # - name: Init database
+      #   run: psql -h db -U app -d myapp_test -f src/schema.sql
+      #   env:
+      #     PGPASSWORD: secret
+
+      - run: npm ci
+
+      # TODO: Run tests with the correct URLs
+      # Note: 'db' and 'cache' instead of 'localhost'!
+      # - name: Run tests
+      #   run: npm test
+      #   env:
+      #     DATABASE_URL: postgresql://app:secret@db:5432/myapp_test
+      #     REDIS_URL: redis://cache:6379
